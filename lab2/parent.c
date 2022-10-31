@@ -15,7 +15,7 @@ int main() {
     if (pipe(parent_to_child) == -1) return 1;
     if (pipe(child_to_parent) == -1) return 1;
 
-    // printf("enter name of result file: ");
+    printf("enter name of file: ");
     char filename[100];
     scanf("%s", filename);
     int file = open(filename, O_WRONLY | O_CREAT, 0777);
@@ -45,7 +45,7 @@ int main() {
         close(file);
 
         // redirect error
-        if (dup2(child_to_parent[1], STDOUT_FILENO) == -1) {
+        if (dup2(child_to_parent[1], STDERR_FILENO) == -1) {
             return 2;
         }
         close(child_to_parent[1]);
@@ -61,28 +61,24 @@ int main() {
         close(parent_to_child[0]);
         close(child_to_parent[1]);
         
-        // while (1) {
-            int string_length;
-            printf("enter lenght of string: ");
-            scanf("%d", &string_length);
-            // if (string_length == 0) break;
-            write(parent_to_child[1], &string_length, sizeof(int));
-            
-            char current_string[string_length];
-            printf("enter string: ");
-            scanf("%s", current_string);
-            write(parent_to_child[1], current_string, sizeof(current_string)+1);
-            printf("\nDONE\n");
-        // }
+        int string_len;
+        printf("enter size of string: ");
+        scanf("%d", &string_len);
+        write(parent_to_child[1], &string_len, sizeof(int));
         
+        char current_string[string_len];
+        printf("enter string: ");
+        scanf("%s", current_string);
+        write(parent_to_child[1], current_string, sizeof(current_string)+1);
 
         close(parent_to_child[1]);
 
-        char buffer;
-        while (read(child_to_parent[0], &buffer, sizeof(char)) > 0) {
-            printf("%c", buffer);
-        }
-        close(child_to_parent[0]);
-        printf("\nFINISHED\n");
+        wait(NULL);
+
+        // char buffer;
+        // while (read(child_to_parent[0], &buffer, sizeof(char)) > 0) {
+        //     printf("%c", buffer);
+        // }
+        printf("\nDONE\n");
     }
 }
