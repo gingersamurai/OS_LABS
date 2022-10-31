@@ -61,6 +61,8 @@ int main() {
         close(parent_to_child[0]);
         close(child_to_parent[1]);
         
+        
+        
         int string_len;
         printf("enter size of string: ");
         scanf("%d", &string_len);
@@ -70,15 +72,16 @@ int main() {
         printf("enter string: ");
         scanf("%s", current_string);
         write(parent_to_child[1], current_string, sizeof(current_string)+1);
+        
 
         close(parent_to_child[1]);
 
         wait(NULL);
 
-        // char buffer;
-        // while (read(child_to_parent[0], &buffer, sizeof(char)) > 0) {
-        //     printf("%c", buffer);
-        // }
+        char buffer;
+        while (read(child_to_parent[0], &buffer, sizeof(char)) > 0) {
+            printf("%c", buffer);
+        }
         printf("\nDONE\n");
     }
 }
