@@ -9,52 +9,80 @@
 
 
 int main() {
+    // init pipes
+    int parent_to_child[2];
+    int child_to_parent[2];
+    if (pipe(parent_to_child) == -1) return 1;
+    if (pipe(child_to_parent) == -1) return 1;
+
+    // printf("enter name of result file: ");
     char filename[100];
     scanf("%s", filename);
     int file = open(filename, O_WRONLY | O_CREAT, 0777);
-    int pipe1[2];  // p -> c
-    int pipe2[2];  // c -> p
-    if (pipe(pipe1) == -1) return 1;
-    if (pipe(pipe2) == -1) return 1;
 
     if (file == -1) {
-        return 1;
+        return 2;
     }
 
     int pid = fork();
     if (pid == 0) {
         // child
-
-        // redirect stdout to file
-        dup2(file, STDOUT_FILENO);
-        close(file);
-        // redirect stdin
-        dup2(pipe1[0], STDIN_FILENO);
-        close(pipe1[0]);
-        // redirect stderr to pipe2
-        dup2(pipe2[1], STDERR_FILENO);
-        close(pipe2[1]);
         
+        // close useless fd
+        close(parent_to_child[1]);
+        close(child_to_parent[0]);
 
-        int exec_res = execl("./build/child", "./build/child", NULL);
-        if (exec_res == -1) {
-            printf("Could not execute\n");
+        // redirect input
+        if (dup2(parent_to_child[0], STDIN_FILENO) == -1) {
             return 2;
         }
+        close(parent_to_child[0]);
+
+        // redirect output
+        if (dup2(file, STDOUT_FILENO) == -1) {
+            return 2;
+        }
+        close(file);
+
+        // redirect error
+        if (dup2(child_to_parent[1], STDOUT_FILENO) == -1) {
+            return 2;
+        }
+        close(child_to_parent[1]);
+
+        if (execl("./build/child", "./build/child", NULL) == -1) {
+            return 3;
+        }
+
     } else {
         // parent
-        FILE *logfile = fopen("parlog", "a");
+        
+        // close useless fd
+        close(parent_to_child[0]);
+        close(child_to_parent[1]);
+        
+        // while (1) {
+            int string_length;
+            printf("enter lenght of string: ");
+            scanf("%d", &string_length);
+            // if (string_length == 0) break;
+            write(parent_to_child[1], &string_length, sizeof(int));
+            
+            char current_string[string_length];
+            printf("enter string: ");
+            scanf("%s", current_string);
+            write(parent_to_child[1], current_string, sizeof(current_string)+1);
+            printf("\nDONE\n");
+        // }
+        
 
+        close(parent_to_child[1]);
 
-        dup2(pipe2[0], STDOUT_FILENO);
-        close(pipe2[0]);
-
-        char * string_iterator;
-        unsigned long int length = 0;
-        while (getline(&string_iterator, &length, stdin) != -1) {
-            fprintf(logfile, "PARENT transmitted: [%s]\n", string_iterator);
-            write(pipe1[1], string_iterator, strlen(string_iterator));
+        char buffer;
+        while (read(child_to_parent[0], &buffer, sizeof(char)) > 0) {
+            printf("%c", buffer);
         }
-        fclose(logfile);
+        close(child_to_parent[0]);
+        printf("\nFINISHED\n");
     }
 }
