@@ -1,12 +1,11 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/wait.h>
 #include <fcntl.h>
 #include <signal.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <unistd.h>
 
 int main() {
     // init pipes
@@ -24,10 +23,10 @@ int main() {
         return 2;
     }
 
-    int pid = fork();
-    if (pid == 0) {
+    int parent_id = fork();
+    if (parent_id == 0) {
         // child
-        
+
         // close useless fd
         close(parent_to_child[1]);
         close(child_to_parent[0]);
@@ -60,12 +59,12 @@ int main() {
         // close useless fd
         close(parent_to_child[0]);
         close(child_to_parent[1]);
-        
+
         int string_count;
         printf("enter count of strings: ");
         scanf("%d", &string_count);
         write(parent_to_child[1], &string_count, sizeof(int));
-        for (int iter = 0; iter < string_count; ++iter) {
+        for (int iteration = 0; iteration < string_count; ++iteration) {
             int string_len;
             printf("enter size of string: ");
             scanf("%d", &string_len);
@@ -74,11 +73,9 @@ int main() {
             char current_string[string_len];
             printf("enter string: ");
             scanf("%s", current_string);
-            write(parent_to_child[1], current_string, sizeof(current_string)+1);
+            write(parent_to_child[1], current_string,
+                  sizeof(current_string) + 1);
         }
-        
-        
-        
 
         close(parent_to_child[1]);
 

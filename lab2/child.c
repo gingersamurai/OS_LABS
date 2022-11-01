@@ -15,16 +15,15 @@ int check(char *current_string) {
 }
 
 int main() {
-
     int string_count;
     read(STDIN_FILENO, &string_count, sizeof(int));
 
     for (int iter = 0; iter < string_count; ++iter) {
         int string_len;
         read(STDIN_FILENO, &string_len, sizeof(int));
-        
+
         char parent_string[string_len];
-        read(STDIN_FILENO, &parent_string, sizeof(parent_string)+1);
+        read(STDIN_FILENO, &parent_string, sizeof(parent_string) + 1);
 
         int res;
         if (check(parent_string) == 1) {
@@ -34,5 +33,4 @@ int main() {
             fprintf(stderr, "string [%s] in incorrect\n", parent_string);
         }
     }
-    
 }
