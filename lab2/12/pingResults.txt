@@ -1,9 +1,0 @@
-PING google.com(lg-in-f113.1e100.net (2a00:1450:4010:c08::71)) 56 data bytes
-64 bytes from lg-in-f113.1e100.net (2a00:1450:4010:c08::71): icmp_seq=1 ttl=106 time=55.7 ms
-64 bytes from lg-in-f113.1e100.net (2a00:1450:4010:c08::71): icmp_seq=2 ttl=106 time=78.0 ms
-64 bytes from lg-in-f113.1e100.net (2a00:1450:4010:c08::71): icmp_seq=3 ttl=106 time=99.7 ms
-
---- google.com ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 55.653/77.801/99.722/17.991 ms
-25/306.081/112.561 ms

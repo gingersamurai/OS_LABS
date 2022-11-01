@@ -5,7 +5,7 @@
 #include <time.h>
 #include <sys/wait.h>
 #include <fcntl.h>
-
+#include <signal.h>
 
 
 int main() {
@@ -56,22 +56,28 @@ int main() {
 
     } else {
         // parent
-        
+
         // close useless fd
         close(parent_to_child[0]);
         close(child_to_parent[1]);
         
+        int string_count;
+        printf("enter count of strings: ");
+        scanf("%d", &string_count);
+        write(parent_to_child[1], &string_count, sizeof(int));
+        for (int iter = 0; iter < string_count; ++iter) {
+            int string_len;
+            printf("enter size of string: ");
+            scanf("%d", &string_len);
+            write(parent_to_child[1], &string_len, sizeof(int));
+
+            char current_string[string_len];
+            printf("enter string: ");
+            scanf("%s", current_string);
+            write(parent_to_child[1], current_string, sizeof(current_string)+1);
+        }
         
         
-        int string_len;
-        printf("enter size of string: ");
-        scanf("%d", &string_len);
-        write(parent_to_child[1], &string_len, sizeof(int));
-        
-        char current_string[string_len];
-        printf("enter string: ");
-        scanf("%s", current_string);
-        write(parent_to_child[1], current_string, sizeof(current_string)+1);
         
 
         close(parent_to_child[1]);
