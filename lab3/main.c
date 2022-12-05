@@ -33,6 +33,34 @@ void *insertion_sort(void *args) {
     return 0;
 }
 
+void merge(int *array, int left1, int right1, int left2, int right2) {
+    int new_array[right2 - left1 + 1];
+    int result_index = 0;
+    int index1 = left1;
+    int index2 = left2;
+    while (1) {
+        if (index1 > right1) {
+            while (index2 <= right2) {
+                new_array[result_index++] = array[index2++];
+            }
+            break;
+        } else if (index2 > right2) {
+            while (index1 <= right1) {
+                new_array[result_index++] = array[index1++];
+            }
+            break;
+        } else if (array[index1] <= array[index2]) {
+            new_array[result_index++] = array[index1++];
+        } else if (array[index1] > array[index2]) {
+            new_array[result_index++] = array[index2++];
+        }
+    }
+
+    for (int index = left1; index <= right2; index++) {
+        array[index] = new_array[index - left1];
+    }
+}
+
 void solve(int *array, int length, int threads_count) {
     printf("len: %d\tthr_cnt: %d\n", length, threads_count);
     int run_len = length / threads_count;
@@ -67,6 +95,10 @@ void solve(int *array, int length, int threads_count) {
         }
     }
 
+    for (int index = 1; index < threads_count; index++) {
+        merge(array, runs[index-1][0], runs[index-1][1], runs[index][0], runs[index][1]);
+        runs[index][0] = runs[index-1][0];
+    }
 
 
 }
