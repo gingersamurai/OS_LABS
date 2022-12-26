@@ -30,7 +30,6 @@ int main() {
         sem_wait(semc);
 
         if (strlen(shared_string) == 0) {
-            fprintf(stderr, "out child\n");
             break;
         }
 
