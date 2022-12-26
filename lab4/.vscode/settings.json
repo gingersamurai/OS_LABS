@@ -4,6 +4,8 @@
         "mman.h": "c",
         "fcntl.h": "c",
         "string.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "semaphore.h": "c",
+        "atomic": "c"
     }
 }
