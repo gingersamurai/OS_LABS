@@ -7,7 +7,7 @@ int main() {
         printf("enter command: ");
         scanf("%d", &command);
         if (command == 1) {
-            printf("enter length of row: ");
+            printf("enter value of k: ");
             int k;
             scanf("%d", &k);
             printf("result: %f\n", get_pi(k));
@@ -19,5 +19,6 @@ int main() {
         } else {
             break;
         }
+        
     }
 }

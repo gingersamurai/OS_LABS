@@ -15,5 +15,8 @@ float get_pi(int k) {
 }
 
 float get_e(int x) {
-    return pow(1.0 + (1.0 / x), x);
+    float ans = 1.0 + (1.0 / x);
+    float start = ans;
+    for (int i = 0; i < x; i++) ans *= start;
+    return ans;
 }
