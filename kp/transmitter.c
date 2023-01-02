@@ -36,7 +36,7 @@ int main() {
             // stat (child);
             int estatus = execl("./build/stat", "./build/stat", NULL);
         }
-        kill(stat_id, SIGINT);
+        usleep(100000);
         init_sigaction();
         raise(SIGUSR2);
         while (1);
@@ -91,21 +91,24 @@ void send_message_handler(int sig) {
         usleep(100000);
         sprintf(shared_string, "%d", stat_id);
         status = 0;
-        printf("send id = %s\n", shared_string);
         first = 0;
+        kill(receiver_id, SIGUSR1);
     }
     else {
         printf("enter string: ");
         status = my_getline(shared_string);
+        if (status == -1) {
+            kill(stat_id, SIGINT);
+            kill(receiver_id, SIGKILL);
+            wait(NULL);
+            munmap(shared_string, getpagesize());
+            exit(0);
+        }
+        kill(stat_id, SIGUSR1);
+        kill(receiver_id, SIGUSR1);
     }
-    if (status == -1) {
-        kill(stat_id, SIGINT);
-        kill(receiver_id, SIGKILL);
-        wait(NULL);
-        munmap(shared_string, getpagesize());
-        exit(0);
-    }
-    kill(receiver_id, SIGUSR1);
-    kill(stat_id, SIGUSR1);
+    
+    
+    
 }
 

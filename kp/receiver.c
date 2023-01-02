@@ -20,8 +20,6 @@ void write_output_handler(int sig);
 
 
 int main() {
-    printf("started receiver\n");
-
     init_shared_memory();
     
     init_sigaction();
@@ -50,8 +48,6 @@ void init_sigaction() {
 void write_output_handler(int sig) {
     if (first) {
         stat_id = atoi(shared_string);
-        printf("got stat_id = %d\n", stat_id);
-
         first = 0;
         kill(getppid(), SIGUSR2);
         return;

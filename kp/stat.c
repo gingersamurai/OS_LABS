@@ -24,17 +24,16 @@ void init_receiver_sigaction();
 void init_finish_sigaction();
 
 
-void transmitter_hangle(int sig);
+void transmitter_handle(int sig);
 
-void receiver_hangle(int sig);
+void receiver_handle(int sig);
 
-void finish_hangle(int sig);
+void finish_handle(int sig);
 
 
 
 
 int main() {
-    printf("started stat\n");
     init_shared_memory();
     
     init_transmitter_sigaction();
@@ -51,10 +50,11 @@ void init_shared_memory() {
 
 }
 
+
 void init_transmitter_sigaction() {
     struct sigaction act;
     memset(&act, 0, sizeof(act));
-    act.sa_handler = transmitter_hangle;
+    act.sa_handler = transmitter_handle;
     sigset_t set;
     sigemptyset(&set);
     sigaddset(&set, SIGUSR2);
@@ -67,7 +67,7 @@ void init_transmitter_sigaction() {
 void init_receiver_sigaction() {
     struct sigaction act;
     memset(&act, 0, sizeof(act));
-    act.sa_handler = receiver_hangle;
+    act.sa_handler = receiver_handle;
     sigset_t set;
     sigemptyset(&set);
     sigaddset(&set, SIGUSR2);
@@ -81,7 +81,7 @@ void init_finish_sigaction() {
     
     struct sigaction act;
     memset(&act, 0, sizeof(act));
-    act.sa_handler = receiver_hangle;
+    act.sa_handler = finish_handle;
     sigset_t set;
     sigemptyset(&set);
     sigaddset(&set, SIGUSR2);
@@ -92,19 +92,16 @@ void init_finish_sigaction() {
 }
 
 
-void transmitter_hangle(int sig) {
-    printf("-stat got sigusr1\n");
+void transmitter_handle(int sig) {
     cnt_transmitted += strlen(shared_string);
 }
 
-void receiver_hangle(int sig) {
-    printf("-stat got sigusr2\n");
+void receiver_handle(int sig) {
     cnt_received += strlen(shared_string);
 }
 
-void finish_hangle(int sig) {
-    printf("-stat got sigint\n");
-    printf("result\n");
+void finish_handle(int sig) {
+    printf("result:\n");
     printf("transmitted\t%d\tsymbls\n", cnt_transmitted);
     printf("received\t%d\tsymbls\n", cnt_received);
     exit(0);
