@@ -7,7 +7,8 @@
 
 #include "map.h"
 #include "tree.h"
-
+ 
 int main(int argc, const char **argv) {
-    log_info("node %d started work", atoi(argv[1]));
+    log_info("comput node with id = %d started", atoi(argv[1]));
+    while (1);
 }
