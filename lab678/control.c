@@ -10,6 +10,35 @@
 #include "map.h"
 #include "tree.h"
 
+void send_message(char *text, int id, char *reply) {
+    void *context = zmq_ctx_new();
+    void *request_socket = zmq_socket(context, ZMQ_REQ);  
+    char adress[100];
+    sprintf(adress, "tcp://localhost:%d", 10000 + id);
+    zmq_connect(request_socket, adress);
+    log_trace("connected to %s", adress);
+
+    zmq_msg_t req_msg;
+    zmq_msg_init_size(&req_msg, strlen(text) + 1);
+    memcpy(zmq_msg_data(&req_msg), text, strlen(text) + 1);
+    log_trace("sending %s", (char *)zmq_msg_data(&req_msg));
+    zmq_msg_send(&req_msg, request_socket, 0);
+    log_trace("message send");
+    zmq_msg_close(&req_msg);
+
+
+    zmq_msg_t rep_msg;
+    zmq_msg_init(&rep_msg);
+    log_trace("receiving mesage");
+    zmq_msg_recv(&rep_msg, request_socket, 0);
+    log_trace("message received");
+    memcpy(reply, zmq_msg_data(&rep_msg), zmq_msg_size(&rep_msg));
+    zmq_msg_close(&req_msg);
+    printf("main received %s\n", reply);
+
+    zmq_close(request_socket);
+    zmq_ctx_destroy(context); 
+}
 
 int main() {
     log_info("control node started");
@@ -51,10 +80,16 @@ int main() {
             // remove id
 
             int id;
-            scanf("%d", id);
+            scanf("%d", &id);
             node *res_node = node_find(id, root);
             if (res_node == NULL) {
                 printf("error: not found\n");
+            } else {
+                node_delete(&res_node);
+                printf("ok\n");
+                char ans[100];
+                log_trace("sending message");
+                send_message("remove", id, ans);
             }
         }
 
