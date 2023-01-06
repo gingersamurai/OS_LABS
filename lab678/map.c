@@ -45,18 +45,24 @@ void map_print(map my_map) {
 //     map my_map;
 //     map_init(&my_map);
 
-//     // my_map.array[0].key = "abc";
-//     // my_map.array[0].value = 15;
-//     // my_map.size++;
-//     map_insert("abc", 34, &my_map);
-//     map_print(my_map);
-//     printf("find res: %d\n", map_find("abd", my_map));
-//     printf("find res: %d\n", map_find("abc", my_map));
-//     map_insert("xyz", 63, &my_map);
-//     printf("find res: %d\n", map_find("abc", my_map));
-//     printf("find res: %d\n", map_find("xyz", my_map));
-//     map_print(my_map);
-//     map_insert("xyz", 22, &my_map);
-//     map_print(my_map);
+//     while (1) {
+//         int f;
+//         scanf("%d", &f);
+//         map_print(my_map);
+//         char key[100];
+//         int val;
+//         if (f == 1) {
+//             scanf("%s", key);
+//             scanf("%d", &val);
+//             printf("( %s : %d )\n", key, val);
+//             map_insert(key, val, &my_map);
+//         } else {
+//             scanf("%s", key);
+//             printf("( %s )\n", key);
+//             printf("%d\n", map_find(key, my_map));
+//         }
+//         map_print(my_map);
+        
+//     }
     
 // }

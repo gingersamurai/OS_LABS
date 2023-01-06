@@ -9,10 +9,11 @@
 #include "tree.h"
 
 void ans_exec(char *request, char *result, map *my_map, int id) {
-    map_print(*my_map);
     char *pch = strtok(request, " ");
-    
-    char *key = pch;
+    pch = strtok(NULL, " ");
+    char *wkey = pch;
+    char *key = malloc(100);
+    strcpy(key, wkey);
     pch = strtok(NULL, " ");
     if (pch == NULL) {
         log_warn("key: [%s]", key);
@@ -57,10 +58,9 @@ int main(int argc, const char **argv) {
         zmq_msg_close(&req_msg);
         
         char text[100] = "ok";
-        log_error("got size %ld [%s]", strlen(request), request);
         if (strstr(request, "exec") - request == 0) {
             
-            ans_exec(request+5, text, &my_map, id);
+            ans_exec(request, text, &my_map, id);
         }
         
         zmq_msg_t rep_msg;
