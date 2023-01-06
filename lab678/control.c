@@ -21,7 +21,7 @@ void send_message(char *text, int id, char *reply) {
     zmq_msg_t req_msg;
     zmq_msg_init_size(&req_msg, strlen(text) + 1);
     memcpy(zmq_msg_data(&req_msg), text, strlen(text) + 1);
-    log_trace("sending %s", (char *)zmq_msg_data(&req_msg));
+    log_trace("sending message: %s", (char *)zmq_msg_data(&req_msg));
     zmq_msg_send(&req_msg, request_socket, 0);
     log_trace("message send");
     zmq_msg_close(&req_msg);
@@ -31,10 +31,9 @@ void send_message(char *text, int id, char *reply) {
     zmq_msg_init(&rep_msg);
     log_trace("receiving mesage");
     zmq_msg_recv(&rep_msg, request_socket, 0);
-    log_trace("message received");
+    log_trace("message received: %s", (char *)zmq_msg_data(&rep_msg));
     memcpy(reply, zmq_msg_data(&rep_msg), zmq_msg_size(&rep_msg));
     zmq_msg_close(&req_msg);
-    printf("main received %s\n", reply);
 
     zmq_close(request_socket);
     zmq_ctx_destroy(context); 
@@ -48,7 +47,6 @@ int main() {
     while (1) {
         char command[100];
         scanf("%s", command);
-
         if (strcmp(command, "create") == 0) { 
             // create id
             
@@ -91,9 +89,21 @@ int main() {
                 log_trace("sending message");
                 send_message("remove", id, ans);
             }
+        } else if (strcmp(command, "exec") == 0) {
+            // exec id key val
+            int id;
+            scanf("%d", &id);
+            char buff[100];
+            fgets(buff, 100, stdin);
+            char message[1000];
+            sprintf(message, "exec %s", buff);
+            message[strlen(message)-1] = '\0';
+            char ans[1000];
+            send_message(message, id, ans);
+            printf("%s\n",ans);
         }
 
-        node_print_tree(root, 0);
+        // node_print_tree(root, 0);
 
     }
 }

@@ -48,7 +48,7 @@ void map_print(map my_map) {
 //     // my_map.array[0].key = "abc";
 //     // my_map.array[0].value = 15;
 //     // my_map.size++;
-//     map_insert("abc", 5, &my_map);
+//     map_insert("abc", 34, &my_map);
 //     map_print(my_map);
 //     printf("find res: %d\n", map_find("abd", my_map));
 //     printf("find res: %d\n", map_find("abc", my_map));

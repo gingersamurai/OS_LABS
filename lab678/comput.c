@@ -7,10 +7,36 @@
 
 #include "map.h"
 #include "tree.h"
- 
+
+void ans_exec(char *request, char *result, map *my_map, int id) {
+    map_print(*my_map);
+    char *pch = strtok(request, " ");
+    
+    char *key = pch;
+    pch = strtok(NULL, " ");
+    if (pch == NULL) {
+        log_warn("key: [%s]", key);
+        int pos = map_find(key, *my_map);
+        
+        if (pos == -1) {
+           sprintf(result, "ok:%d: \'%s\' not found", id, key); 
+        } else {
+            sprintf(result, "ok:%d %d", id, (my_map->array)[pos].value);
+        }
+    } else {
+        int val = atoi(pch);
+        log_warn("key: [%s]  value: [%d]", key, val);
+        map_insert(key, val, my_map);
+        sprintf(result, "ok:%d", id);
+    }    
+}
+
 int main(int argc, const char **argv) {
     int id = atoi(argv[1]);
     log_info("comput node with id = %d started", id);
+
+    map my_map;
+    map_init(&my_map);
 
     void* context = zmq_ctx_new();
 	void* respond_socket = zmq_socket(context, ZMQ_REP);
@@ -25,17 +51,22 @@ int main(int argc, const char **argv) {
         zmq_msg_init(&req_msg);
         log_trace("receiving message");
         zmq_msg_recv(&req_msg, respond_socket, 0);
-        log_trace("message received");
+        log_trace("message received: %s", (char *)zmq_msg_data(&req_msg));
         char request[100];
         memcpy(request, zmq_msg_data(&req_msg), zmq_msg_size(&req_msg));
-        printf("id: %d  received %s\n", id, request);
         zmq_msg_close(&req_msg);
-
+        
         char text[100] = "ok";
+        log_error("got size %ld [%s]", strlen(request), request);
+        if (strstr(request, "exec") - request == 0) {
+            
+            ans_exec(request+5, text, &my_map, id);
+        }
+        
         zmq_msg_t rep_msg;
         zmq_msg_init_size(&rep_msg, strlen(text)+1);
         memcpy(zmq_msg_data(&rep_msg), text, strlen(text)+1);
-        log_trace("sending message");
+        log_trace("sending message: %s", (char *)zmq_msg_data(&rep_msg));
         zmq_msg_send(&rep_msg, respond_socket, 0);
         log_trace("message send");
         zmq_msg_close(&rep_msg);

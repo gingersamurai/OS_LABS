@@ -20,6 +20,8 @@ int map_init(map *my_map);
 
 int map_find(char *key, map my_map);
 
+void map_insert(char *key, int value, map *my_map);
+
 void map_print(map my_map);
 
 #endif
