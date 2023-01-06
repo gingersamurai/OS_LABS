@@ -57,7 +57,8 @@ int main(int argc, const char **argv) {
         memcpy(request, zmq_msg_data(&req_msg), zmq_msg_size(&req_msg));
         zmq_msg_close(&req_msg);
         
-        char text[100] = "ok";
+        char text[100];
+        sprintf(text, "ok:%d", id);
         if (strstr(request, "exec") - request == 0) {
             
             ans_exec(request, text, &my_map, id);

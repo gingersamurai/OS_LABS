@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <zmq.h>
 #include <log.h>
@@ -38,6 +39,27 @@ void send_message(char *text, int id, char *reply) {
     zmq_close(request_socket);
     zmq_ctx_destroy(context); 
 }
+
+void pingall(node *root, int timecnt) {
+    if (root == NULL) return;
+    pingall(root->right_child, timecnt);
+
+    char message[100] = "ping";
+    char res[100];
+    time_t timer_start, timer_finish;
+    time(&timer_start);
+    send_message(message, root->id, res);
+    time(&timer_finish);
+    if (difftime(timer_finish, timer_start) / 1000.0 > 4 * (double) timecnt) {
+        printf("Heartbit: node %d is unavailable now\n", root->id);
+    } else {
+        printf("%s\n", res);
+    }
+    
+
+    pingall(root->left_child, timecnt);
+}
+
 
 int main() {
     log_info("control node started");
@@ -101,6 +123,17 @@ int main() {
             char ans[1000];
             send_message(message, id, ans);
             printf("%s\n",ans);
+        } else if (strcmp(command, "heartbit") == 0) {
+            // heartbit time
+            int cnt = 10;
+            int timecnt;
+            scanf("%d", &timecnt);
+            while (cnt--) {
+                pingall(root, timecnt);
+                usleep(1000 * timecnt);
+            }
+            printf("OK\n");
+            
         }
 
         // node_print_tree(root, 0);
